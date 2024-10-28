@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Note Taking App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 2em;
+        }
+        #note-list {
+            margin-bottom: 1em;
+        }
+        #note-display {
+            margin-top: 1em;
+            border: 1px solid #ccc;
+            padding: 1em;
+        }
+        .btn {
+            margin-top: 1em;
+        }
+    </style>
+</head>
+<body>
+    <h1>Note Taking App</h1>
+    
+    <label for="note-title">Title:</label>
+    <input type="text" id="note-title" placeholder="Enter title here">
+    
+    <label for="note-content">Note:</label>
+    <textarea id="note-content" rows="10" cols="50" placeholder="Write your note here..."></textarea>
+    
+    <br>
+    <button id="save-note" class="btn">Save Note</button>
+    <button id="delete-note" class="btn">Delete Note</button>
+    
+    <h2>Saved Notes</h2>
+    <select id="note-list">
+        <option value="">Select a note...</option>
+    </select>
+    
+    <div id="note-display"></div>
+
+    <script>
+        const noteTitle = document.getElementById('note-title');
+        const noteContent = document.getElementById('note-content');
+        const saveNoteButton = document.getElementById('save-note');
+        const deleteNoteButton = document.getElementById('delete-note');
+        const noteList = document.getElementById('note-list');
+        const noteDisplay = document.getElementById('note-display');
+
+        const notes = {};
+
+        function saveNote() {
+            const title = noteTitle.value;
+            const content = noteContent.value;
+            const timestamp = new Date().toISOString();
+            const noteKey = `${timestamp}-${title}`;
+
+            if (title && content) {
+                notes[noteKey] = { title, content };
+                updateNoteList();
+                noteTitle.value = '';
+                noteContent.value = '';
+            } else {
+                alert('Please enter both a title and note content.');
+            }
+        }
+
+        function deleteNote() {
+            const selectedNoteKey = noteList.value;
+            if (selectedNoteKey && notes[selectedNoteKey]) {
+                delete notes[selectedNoteKey];
+                updateNoteList();
+                noteTitle.value = '';
+                noteContent.value = '';
+                noteDisplay.textContent = '';
+            } else {
+                alert('Please select a note to delete.');
+            }
+        }
+
+        function updateNoteList() {
+            noteList.innerHTML = '<option value="">Select a note...</option>';
+            for (let key in notes) {
+                const option = document.createElement('option');
+                option.value = key;
+                option.textContent = key;
+                noteList.appendChild(option);
+            }
+        }
+
+        function showNote() {
+            const selectedNoteKey = noteList.value;
+            if (selectedNoteKey && notes[selectedNoteKey]) {
+                const { title, content } = notes[selectedNoteKey];
+                noteDisplay.innerHTML = `<h3>${title}</h3><p>${content}</p>`;
+                noteTitle.value = title;
+                noteContent.value = content;
+            } else {
+                noteDisplay.textContent = '';
+            }
+        }
+
+        saveNoteButton.addEventListener('click', saveNote);
+        deleteNoteButton.addEventListener('click', deleteNote);
+        noteList.addEventListener('change', showNote);
+    </script>
+</body>
+</html>
